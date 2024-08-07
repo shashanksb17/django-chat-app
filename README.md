@@ -1,3 +1,6 @@
+Here is the updated `README.md` file with Docker instructions added:
+
+
 # [Django Chat Application](https://django-chat-application.onrender.com)
 
 The Django Chat Application is a web-based platform that allows users to engage in real-time chat conversations with their friends, manage their profiles, send and accept friend requests, and search for other users within the application. This project provides a user-friendly interface for communication and social interaction, utilizing API calls and polling for real-time chat updates.
@@ -5,17 +8,11 @@ The Django Chat Application is a web-based platform that allows users to engage 
 ## Key Features
 
 - **User Authentication**: Users must first log in to access the application. New users have the option to sign up for an account.
-
 - **User Profiles**: Each user has a profile page displaying their information. Users can edit their profile information.
-
 - **Navigation**: The application features a simple UI with the following buttons: "Edit Profile," "Logout," and "Search" to allow users to find other users on the platform.
-
 - **Friend Management**: Users can maintain two lists: "Friend List" and "Request List." Users can click on friend names in these lists to access profiles or start chats.
-
 - **Chatting**: Users can initiate chat conversations by clicking on a friend's name. Real-time chat functionality is implemented using API calls and polling, enabling near-instant communication.
-
 - **Friend Requests**: Users can send friend requests to others by visiting their profiles. Pending friend requests can be accepted or rejected. Accepted requests add users to each other's friend lists.
-
 - **Friend Profile Options**: Users can perform actions on friends' profiles, including "Remove Friend" and "Chat."
 
 ## User Flow
@@ -62,7 +59,7 @@ To get started with the Django Chat Application, follow these steps:
 1. Clone the repository to your local machine:
 
    ```bash
-   git clone https://github.com/devnamdev2003/django-chat-app.git
+   git clone https://github.com/shashanksb17/django-chat-app.git
    ```
 
 2. Create a virtual environment and install the project dependencies:
@@ -88,6 +85,130 @@ To get started with the Django Chat Application, follow these steps:
 
 5. Open a web browser and navigate to `http://localhost:8000/` to access the application.
 
+## Docker Deployment
+
+To deploy the Django Chat Application using Docker, follow these steps:
+
+1. Ensure you have Docker and Docker Compose installed on your machine.
+
+2. Create a `Dockerfile` in the root of your project directory:
+
+   ```Dockerfile
+   # Use the official Python image as a base image
+   FROM python:3.10-slim
+
+   # Set environment variables
+   ENV PYTHONDONTWRITEBYTECODE=1
+   ENV PYTHONUNBUFFERED=1
+
+   # Set work directory
+   WORKDIR /app
+
+   # Install dependencies
+   COPY requirements.txt /app/
+   RUN pip install --upgrade pip && pip install -r requirements.txt
+
+   # Copy project
+   COPY . /app/
+
+   # Expose port 8000
+   EXPOSE 8000
+
+   # Run the application
+   CMD ["gunicorn", "--bind", "0.0.0.0:8000", "registration.wsgi:application"]
+   ```
+
+3. Create a `docker-compose.yml` file in the root of your project directory:
+
+   ```yaml
+   version: '3'
+
+   services:
+     web:
+       build: .
+       command: gunicorn --bind 0.0.0.0:8000 registration.wsgi:application
+       ports:
+         - "8000:8000"
+       volumes:
+         - .:/app
+       environment:
+         - DEBUG=1
+   ```
+
+4. Build and run your Docker containers:
+
+   ```bash
+   docker-compose up --build
+   ```
+
+5. Open a web browser and navigate to `http://localhost:8000/` to access the application.
+
+
+## AWS Lambda Deployment with Zappa
+
+To deploy the Django Chat Application to AWS Lambda using Zappa, follow these steps:
+
+1. Create a new IAM user in AWS and generate access keys.
+2. Add necessary permissions by creating a new group for the user.
+3. Install the AWS CLI on your machine:
+
+   ```bash
+   pip install awscli
+   ```
+
+4. Configure the AWS CLI with your access keys:
+
+   ```bash
+   aws configure
+   ```
+
+5. Install Zappa in your Django project's virtual environment:
+
+   ```bash
+   pip install zappa
+   ```
+
+6. Initialize Zappa in your project:
+
+   ```bash
+   zappa init
+   ```
+
+7. During initialization, you will be prompted to provide the following details:
+   - S3 bucket name for Zappa deployments.
+   - Module path to your project's Django settings.
+   - Deployment environment (e.g., dev, stage, production).
+   - AWS region for deployment.
+
+8. Your `zappa_settings.json` file will be generated. Here is an example configuration:
+
+   ```json
+   {
+       "dev": {
+           "aws_region": "us-east-1",
+           "django_settings": "registration.settings",
+           "exclude": [
+               "boto3",
+               "dateutil",
+               "botocore",
+               "s3transfer",
+               "concurrent"
+           ],
+           "profile_name": "default",
+           "project_name": "django-chat-app",
+           "runtime": "python3.11",
+           "s3_bucket": "zappa-ypjxcj2zv"
+       }
+   }
+   ```
+
+9. Deploy the application to AWS Lambda:
+
+   ```bash
+   zappa deploy dev
+   ```
+
+10. For the database, you can use Render's PostgreSQL database.
 
 ## Contributions
 
