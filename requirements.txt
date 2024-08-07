@@ -1,0 +1,12 @@
+asgiref
+Django
+pytz
+sqlparse
+typing_extensions
+tzdata
+gunicorn
+djangorestframework
+python-dotenv
+zappa
+dj-database-url
+psycopg2-binary
