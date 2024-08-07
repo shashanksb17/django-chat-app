@@ -88,6 +88,63 @@ To get started with the Django Chat Application, follow these steps:
 
 5. Open a web browser and navigate to `http://localhost:8000/` to access the application.
 
+## Docker Deployment
+
+To deploy the Django Chat Application using Docker, follow these steps:
+
+1. Ensure you have Docker and Docker Compose installed on your machine.
+
+2. Create a `Dockerfile` in the root of your project directory:
+
+   ```Dockerfile
+   # Use the official Python image as a base image
+   FROM python:3.10-slim
+
+   # Set environment variables
+   ENV PYTHONDONTWRITEBYTECODE=1
+   ENV PYTHONUNBUFFERED=1
+
+   # Set work directory
+   WORKDIR /app
+
+   # Install dependencies
+   COPY requirements.txt /app/
+   RUN pip install --upgrade pip && pip install -r requirements.txt
+
+   # Copy project
+   COPY . /app/
+
+   # Expose port 8000
+   EXPOSE 8000
+
+   # Run the application
+   CMD ["gunicorn", "--bind", "0.0.0.0:8000", "registration.wsgi:application"]
+   ```
+
+3. Create a `docker-compose.yml` file in the root of your project directory:
+
+   ```yaml
+   version: '3'
+
+   services:
+     web:
+       build: .
+       command: gunicorn --bind 0.0.0.0:8000 registration.wsgi:application
+       ports:
+         - "8000:8000"
+       volumes:
+         - .:/app
+       environment:
+         - DEBUG=1
+   ```
+
+4. Build and run your Docker containers:
+
+   ```bash
+   docker-compose up --build
+   ```
+
+5. Open a web browser and navigate to `http://localhost:8000/` to access the application.
 
 ## Contributions
 
